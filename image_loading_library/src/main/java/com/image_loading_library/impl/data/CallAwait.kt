@@ -1,4 +1,4 @@
-package com.image_loading_library.impl.utils.network
+package com.image_loading_library.impl.data
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call

@@ -1,13 +1,13 @@
 package com.image_loading_library.impl.di
 
-import com.image_loading_library.ImageDownloader
-import com.image_loading_library.impl.ImageDownloaderImpl
-import com.image_loading_library.impl.data.ImageDownloadRepositoryImpl
-import com.image_loading_library.impl.domain.ImageDownloadRepository
+import com.image_loading_library.impl.presentation.ImageDownloaderImpl
+import com.image_loading_library.impl.presentation.ImageDownloaderInternal
 import com.image_loading_library.impl.utils.DispatcherProvider
 import com.image_loading_library.impl.utils.DispatcherProviderImpl
-import com.image_loading_library.impl.utils.network.FileDownloader
-import com.image_loading_library.impl.utils.network.FileDownloaderImpl
+import com.image_loading_library.impl.domain.FileDownloader
+import com.image_loading_library.impl.data.FileDownloaderImpl
+import com.image_loading_library.impl.domain.ImageDownloadInteractor
+import com.image_loading_library.impl.domain.ImageDownloadInteractorImpl
 import dagger.Binds
 import dagger.Module
 
@@ -20,16 +20,14 @@ internal abstract class ImageLoaderModule {
 
     @Binds
     @ImageLoaderScope
-    abstract fun provideImageDownloadRepository(imageDownloadRepository: ImageDownloadRepositoryImpl): ImageDownloadRepository
+    abstract fun provideFileDownloader(fileDownloader: FileDownloaderImpl): FileDownloader
 
     @Binds
     @ImageLoaderScope
-    abstract fun provideDownloader(downloader: FileDownloaderImpl): FileDownloader
-
-
+    abstract fun provideImageDownloadInteractor(downloader: ImageDownloadInteractorImpl): ImageDownloadInteractor
 
     // Without scope because it should be created new for each image
     @Binds
-    abstract fun provideImageDownloader(imageDownloader: ImageDownloaderImpl): ImageDownloader
+    abstract fun provideImageDownloader(imageDownloader: ImageDownloaderImpl): ImageDownloaderInternal
 
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<!--    <item android:id="@+id/layer_list_item_image" android:drawable="@android:drawable/ic_secure"/>-->
+    <item android:id="@+id/layer_list_item_progress_ring" >
+        <shape android:shape="oval"
+
+            android:innerRadius="230dp" android:thickness="10dp">
+            <stroke android:width="20dp" android:color="#ababf2" />
+        </shape>
+
+    </item>
+
+</layer-list>

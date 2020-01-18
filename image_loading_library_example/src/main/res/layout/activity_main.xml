@@ -6,4 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ImageView android:layout_height="300dp"
+        android:layout_width="300dp"
+        android:id="@+id/image_with_progress"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:src="@drawable/image_with_progress_layer_list"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
