@@ -1,0 +1,2 @@
+include ':image_loading_library_example', ':image_loading_library'
+rootProject.name='Image Loading Library'
