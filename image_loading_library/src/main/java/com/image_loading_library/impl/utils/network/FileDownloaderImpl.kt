@@ -15,10 +15,10 @@ import javax.inject.Inject
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-internal class DownloaderImpl
+internal class FileDownloaderImpl
 
     @Inject
-    constructor(private val dispatcherProvider: DispatcherProvider): Downloader {
+    constructor(private val dispatcherProvider: DispatcherProvider): FileDownloader {
 
     private val loggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
         override fun log(message: String) {

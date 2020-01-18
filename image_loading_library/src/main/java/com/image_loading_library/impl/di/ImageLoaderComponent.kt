@@ -1,9 +1,8 @@
 package com.image_loading_library.impl.di
 
 import com.image_loading_library.ImageDownloader
-import com.image_loading_library.ImageLoader
 import com.image_loading_library.impl.domain.ImageDownloadStream
-import com.image_loading_library.impl.utils.network.Downloader
+import com.image_loading_library.impl.utils.network.FileDownloader
 import dagger.Component
 
 @Component(modules = [ImageLoaderModule::class])
@@ -11,7 +10,7 @@ import dagger.Component
 internal interface ImageLoaderComponent {
 
     fun getImageDownloader(): ImageDownloader
-    fun getDownloader(): Downloader
+    fun getDownloader(): FileDownloader
 
     fun inject(imageDownloadStream: ImageDownloadStream)
 
