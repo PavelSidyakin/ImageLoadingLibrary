@@ -60,7 +60,6 @@ internal class ImageLoaderImpl
 
                     when(progress) {
                         is DownloadProgress.Start -> handleDownloadStart(progress)
-                        is DownloadProgress.GotSize-> handleDownloadGotSize(progress)
                         is DownloadProgress.Progress -> handleDownloadProgress(progress)
                         is DownloadProgress.Success -> handleDownloadSuccess(progress)
                         is DownloadProgress.Error-> handleDownloadError(progress)
@@ -77,11 +76,6 @@ internal class ImageLoaderImpl
         log { i(TAG, "ImageDownloaderImpl.handleDownloadStart(). progress=$start, progressPlaceHolder=$progressPlaceHolder") }
 
         progressPlaceHolder?.let { setImageBitmap(it) }
-    }
-
-    private suspend fun handleDownloadGotSize(progress: DownloadProgress.GotSize) {
-        log { i(TAG, "ImageDownloaderImpl.handleDownloadGotSize(). progress = [${progress}]") }
-
     }
 
     private suspend fun handleDownloadProgress(progress: DownloadProgress.Progress) {
@@ -175,6 +169,7 @@ internal class ImageLoaderImpl
         cropH = if (cropH < 0) 0 else cropH
         return Bitmap.createBitmap(bitmap, cropW, cropH, newWidth, newHeight)
     }
+
     companion object {
         private const val TAG = "ImageDownloader"
 

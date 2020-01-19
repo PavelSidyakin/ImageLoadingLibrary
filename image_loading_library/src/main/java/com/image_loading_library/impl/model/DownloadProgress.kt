@@ -4,8 +4,6 @@ internal sealed class DownloadProgress {
 
     object Start: DownloadProgress()
 
-    data class GotSize(val totalBytes: Int): DownloadProgress()
-
     data class Success(val bytes: ByteArray): DownloadProgress() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

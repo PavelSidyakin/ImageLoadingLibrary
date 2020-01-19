@@ -5,14 +5,18 @@ import com.image_loading_library.impl.di.ImageLoaderComponent
 
 class ImageLoadLibrary {
 
-    private var imageLoaderComponent: ImageLoaderComponent? = null
+    private val imageLoaderComponent: ImageLoaderComponent by lazy { DaggerImageLoaderComponent.builder().build() }
 
     fun createImageLoader(): ImageLoader {
-        if (imageLoaderComponent == null) {
-            imageLoaderComponent = DaggerImageLoaderComponent.builder().build()
-        }
+        return imageLoaderComponent.getImageDownloader()
+    }
 
-        return imageLoaderComponent?.getImageDownloader()?: throw RuntimeException("Component is not initialized")
+    fun initCache(cacheDirectory: String, maxCacheSizeBytes: Int = 10 * 1024 * 1024, maxNumberOfCachedItems: Int = 16) {
+        imageLoaderComponent.getImageDownloadInteractor().apply {
+            this.cacheDirectory = cacheDirectory
+            this.maxCacheSizeBytes = maxCacheSizeBytes
+            this.maxNumberOfCachedItems = maxNumberOfCachedItems
+        }
     }
 
 }

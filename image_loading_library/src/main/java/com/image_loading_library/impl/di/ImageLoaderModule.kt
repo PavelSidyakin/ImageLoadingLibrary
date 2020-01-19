@@ -2,7 +2,9 @@ package com.image_loading_library.impl.di
 
 import com.image_loading_library.ImageLoader
 import com.image_loading_library.impl.data.FileDownloaderImpl
+import com.image_loading_library.impl.data.FileDownloadCacheRepositoryImpl
 import com.image_loading_library.impl.domain.FileDownloader
+import com.image_loading_library.impl.domain.FileDownloadCacheRepository
 import com.image_loading_library.impl.domain.ImageDownloadInteractor
 import com.image_loading_library.impl.domain.ImageDownloadInteractorImpl
 import com.image_loading_library.impl.presentation.ImageLoaderImpl
@@ -25,6 +27,10 @@ internal abstract class ImageLoaderModule {
     @Binds
     @ImageLoaderScope
     abstract fun provideImageDownloadInteractor(downloader: ImageDownloadInteractorImpl): ImageDownloadInteractor
+
+    @Binds
+    @ImageLoaderScope
+    abstract fun provideImageCacheRepository(imageCacheRepository: FileDownloadCacheRepositoryImpl): FileDownloadCacheRepository
 
     // Without scope because it should be created new for each image
     @Binds

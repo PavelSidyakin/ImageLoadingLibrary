@@ -7,4 +7,8 @@ internal interface ImageDownloadInteractor {
 
     suspend fun requestImage(url: String): Flow<DownloadProgress>
 
+    var cacheDirectory: String
+    var maxCacheSizeBytes: Int
+    var maxNumberOfCachedItems: Int
+
 }

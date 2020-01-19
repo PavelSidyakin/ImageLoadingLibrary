@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        imageLoadLibrary.initCache(application.cacheDir.absolutePath)
+
         loadNextImage()
 
         main_activity_button_next_image.setOnClickListener {

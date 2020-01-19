@@ -48,8 +48,6 @@ internal class FileDownloaderImpl
 
                     log { i(TAG, "DownloaderImpl.downloadFile(). contentLength=$contentLength") }
 
-                    emit(DownloadProgress.GotSize(contentLength))
-
                     val data = ByteArray(contentLength)
 
                     val bufferSize = calcBufferSize(contentLength)
