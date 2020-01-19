@@ -8,6 +8,8 @@ internal interface FileDownloadCacheRepository {
 
     suspend fun putInCache(url: String, imageBytes: ByteArray)
 
+    suspend fun renewItem(url: String)
+
     suspend fun findInCache(url: String): ByteArray?
 
     suspend fun getItemCount(): Int

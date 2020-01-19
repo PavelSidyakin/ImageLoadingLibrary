@@ -28,12 +28,14 @@ internal class FileDownloadCacheRepositoryImpl
     }
 
     override suspend fun putInCache(url: String, imageBytes: ByteArray) {
+        log { i(TAG, "FileDownloadCacheRepositoryImpl.putInCache(). url = [${url}], imageBytesSize = [${imageBytes.size}]") }
         withContext(dispatcherProvider.io()) {
             File(makePathForUrl(url)).writeBytes(imageBytes)
         }
     }
 
     override suspend fun findInCache(url: String): ByteArray? {
+        log { i(TAG, "FileDownloadCacheRepositoryImpl.findInCache(). url = [${url}]") }
         return doInCacheDir { cacheDir ->
             cacheDir.walk().find { file -> file.name.endsWith(encodeUrlForFileName(url)) }?.readBytes()
         }
@@ -42,6 +44,8 @@ internal class FileDownloadCacheRepositoryImpl
     override suspend fun getItemCount(): Int {
         return doInCacheDir { cacheDir ->
             cacheDir.listFiles()?.size ?: 0
+        }.also {
+            log { i(TAG, "FileDownloadCacheRepositoryImpl.getItemCount(). returned $it") }
         }
     }
 
@@ -53,10 +57,14 @@ internal class FileDownloadCacheRepositoryImpl
             }
 
             dirSize
+        }.also {
+            log { i(TAG, "FileDownloadCacheRepositoryImpl.getCacheSize(). returned $it") }
         }
     }
 
     override suspend fun invalidateCache() {
+        log { i(TAG, "FileDownloadCacheRepositoryImpl.invalidateCache(). ") }
+
         doInCacheDir { cacheDir ->
             cacheDir.walk().forEach { file ->
                 file.delete()
@@ -65,8 +73,23 @@ internal class FileDownloadCacheRepositoryImpl
     }
 
     override suspend fun removeOldestItem() {
+        log { i(TAG, "FileDownloadCacheRepositoryImpl.removeOldestItem(). ") }
+
         doInCacheDir { cacheDir ->
-            cacheDir.walk().sortedBy { file -> file.name }.first().delete()
+            cacheDir.walk().sortedBy { file -> file.name }.first().also {
+                log { i(TAG, "FileDownloadCacheRepositoryImpl.removeOldestItem(). deleting ${it.name}") }
+            }.delete()
+        }
+    }
+
+    override suspend fun renewItem(url: String) {
+        doInCacheDir { cacheDir ->
+            cacheDir.walk().find { file -> file.name.endsWith(encodeUrlForFileName(url)) }
+                ?.also {
+                   log { i(TAG, "FileDownloadCacheRepositoryImpl.renewItem(). renaming ${it.name}") }
+                }?.renameTo(File(makePathForUrl(url)))
+        }.also {
+            log { i(TAG, "FileDownloadCacheRepositoryImpl.renewItem(). returned $it") }
         }
     }
 
@@ -97,7 +120,7 @@ internal class FileDownloadCacheRepositoryImpl
     }
 
     private fun encodeUrlForFileName(url: String): String {
-        return Base64.encodeToString(zip(url), Base64.URL_SAFE)
+        return Base64.encodeToString(zip(url), Base64.URL_SAFE or Base64.NO_WRAP)
     }
 
     private fun zip(str: String): ByteArray {

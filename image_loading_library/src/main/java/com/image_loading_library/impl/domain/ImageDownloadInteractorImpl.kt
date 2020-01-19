@@ -23,7 +23,9 @@ internal class ImageDownloadInteractorImpl
     override suspend fun requestImage(url: String): Flow<DownloadProgress> {
         log { i(TAG, "ImageDownloadInteractorImpl.requestImage(). url = [${url}]") }
 
-        fileDownloadCacheRepository.init(cacheDirectory)
+        if (cacheDirectory.isNotBlank()) {
+            fileDownloadCacheRepository.init(cacheDirectory)
+        }
 
         if (fileDownloadCacheRepository.isInited()) {
             log { i(TAG, "ImageDownloadInteractorImpl.requestImage(). Try to find in cache...") }
@@ -34,6 +36,7 @@ internal class ImageDownloadInteractorImpl
             if (cachedImage != null) {
                 return flow {
                     emit(DownloadProgress.Success(cachedImage))
+                    fileDownloadCacheRepository.renewItem(url)
                 }
             }
         }
