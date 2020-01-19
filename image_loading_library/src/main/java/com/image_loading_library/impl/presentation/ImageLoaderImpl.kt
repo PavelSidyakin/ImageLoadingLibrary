@@ -106,19 +106,26 @@ internal class ImageLoaderImpl
         withContext(dispatcherProvider.main()) {
             val layerList = imageView?.drawable as LayerDrawable
 
+            val imageWidth = imageView?.run { width } ?: 0
+            val imageHeight = imageView?.run { height } ?: 0
+
+            if (imageHeight == 0 || imageWidth == 0) {
+                return@withContext
+            }
+
             val strokeWidth = 20f
             val arcLeft = strokeWidth / 2
             val arcTop = strokeWidth / 2
-            val arcRight = imageView!!.width.toFloat() - strokeWidth / 2
-            val arcBottom = imageView!!.height.toFloat() - strokeWidth / 2
+            val arcRight = imageWidth.toFloat() - strokeWidth / 2
+            val arcBottom = imageHeight.toFloat() - strokeWidth / 2
 
             val path = Path().apply {
                 addArc(arcLeft, arcTop, arcRight, arcBottom, -90f, 360 * progress / 100f)
             }
 
-            val pathShape = PathShape(path, imageView!!.width.toFloat(), imageView!!.height.toFloat())
+            val pathShape = PathShape(path, imageWidth.toFloat(), imageHeight.toFloat())
             val shapeDrawable = ShapeDrawable(pathShape).apply {
-                setBounds(0, 0, imageView!!.width, imageView!!.height)
+                setBounds(0, 0, imageWidth, imageHeight)
                 paint.style = Paint.Style.STROKE
                 paint.strokeWidth = strokeWidth
                 paint.color = progressColor
@@ -132,8 +139,10 @@ internal class ImageLoaderImpl
         withContext(dispatcherProvider.main()) {
             val layerList = imageView?.drawable as LayerDrawable
 
+            val resources = imageView?.context?.resources ?: return@withContext
+
             val croppedBitmap = cropToSquare(bitmap)
-            val roundedDrawable = RoundedBitmapDrawableFactory.create(imageView!!.context.resources, croppedBitmap)
+            val roundedDrawable = RoundedBitmapDrawableFactory.create(resources, croppedBitmap)
             roundedDrawable.setAntiAlias(true)
             roundedDrawable.cornerRadius = max(bitmap.width, bitmap.height) / 2.0f
             layerList.setDrawableByLayerId(R.id.layer_list_item_image, roundedDrawable)
