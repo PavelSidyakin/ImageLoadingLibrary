@@ -1,7 +1,6 @@
 package com.image_loading_library.impl.di
 
 import com.image_loading_library.ImageLoader
-import com.image_loading_library.impl.domain.FileDownloader
 import com.image_loading_library.impl.domain.ImageDownloadInteractor
 import dagger.Component
 

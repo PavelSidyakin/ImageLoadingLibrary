@@ -7,9 +7,6 @@ import com.image_loading_library.impl.utils.logs.log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.internal.closeQuietly
-import okhttp3.logging.HttpLoggingInterceptor
 import java.io.InputStream
 import java.net.URL
 import java.net.URLConnection
@@ -22,16 +19,6 @@ internal class FileDownloaderImpl
     @Inject
     constructor(private val dispatcherProvider: DispatcherProvider):
     FileDownloader {
-
-    private val loggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-        override fun log(message: String) {
-            log { i(TAG, message) }
-        }
-    }).apply { level = HttpLoggingInterceptor.Level.BODY }
-
-    private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .build()
 
     override suspend fun downloadFile(url: String): Flow<DownloadProgress> {
 
@@ -75,7 +62,7 @@ internal class FileDownloaderImpl
                     emit(DownloadProgress.Error(exception))
                 }
                 finally {
-                    bytesStream?.closeQuietly()
+                    bytesStream?.close()
                 }
             }
         }

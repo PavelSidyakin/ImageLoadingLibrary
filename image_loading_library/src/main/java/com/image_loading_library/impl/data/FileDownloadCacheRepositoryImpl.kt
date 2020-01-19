@@ -28,10 +28,10 @@ internal class FileDownloadCacheRepositoryImpl
         File(cacheDirectory).mkdirs()
     }
 
-    override suspend fun putInCache(url: String, imageBytes: ByteArray) {
-        log { i(TAG, "FileDownloadCacheRepositoryImpl.putInCache(). url = [${url}], imageBytesSize = [${imageBytes.size}]") }
+    override suspend fun putInCache(url: String, fileBytes: ByteArray) {
+        log { i(TAG, "FileDownloadCacheRepositoryImpl.putInCache(). url = [${url}], imageBytesSize = [${fileBytes.size}]") }
         withContext(dispatcherProvider.io()) {
-            File(makePathForUrl(url)).writeBytes(imageBytes)
+            File(makePathForUrl(url)).writeBytes(fileBytes)
         }
     }
 

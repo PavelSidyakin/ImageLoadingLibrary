@@ -20,6 +20,7 @@ import kotlin.math.max
 
 
 internal class ImageLoaderImpl
+
     @Inject
     constructor(
         private val imageDownloadInteractor: ImageDownloadInteractor,
@@ -30,7 +31,7 @@ internal class ImageLoaderImpl
 
     override var progressPlaceHolder: Bitmap? = null
     override var errorPlaceHolder: Bitmap? = null
-    override var progressColor: Int = 0
+    override var progressColor: Int = Color.BLACK
 
     override var doOnFail: ((throwable: Throwable) -> Unit)? = null
     override var doOnSuccess: (() -> Unit)? = null
@@ -45,7 +46,7 @@ internal class ImageLoaderImpl
 
         launch(dispatcherProvider.main()) {
             // Prevent loose of a progress if progressPlaceHolder is not set
-            setImageBitmap(Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.TRANSPARENT) })
+            setTransparentImageBitmap()
         }
     }
 
@@ -75,20 +76,20 @@ internal class ImageLoaderImpl
     private suspend fun handleDownloadStart(start: DownloadProgress.Start) {
         log { i(TAG, "ImageDownloaderImpl.handleDownloadStart(). progress=$start, progressPlaceHolder=$progressPlaceHolder") }
 
-        progressPlaceHolder?.let { setImageBitmap(it) }
+        progressPlaceHolder?.let { setImageBitmap(it) }?:setTransparentImageBitmap()
     }
 
     private suspend fun handleDownloadProgress(progress: DownloadProgress.Progress) {
         log { i(TAG, "ImageDownloaderImpl.handleDownloadProgress(). progress = [${progress}]") }
 
-        progressPlaceHolder?.let { setImageBitmap(it) }
+        progressPlaceHolder?.let { setImageBitmap(it) }?:setTransparentImageBitmap()
         setProgress(progress.progressPercent)
     }
 
     private suspend fun handleDownloadError(error: DownloadProgress.Error) {
         log { i(TAG, "ImageDownloaderImpl.handleDownloadError(). error=$error errorPlaceHolder=$errorPlaceHolder") }
 
-        errorPlaceHolder?.let { setImageBitmap(it) }
+        errorPlaceHolder?.let { setImageBitmap(it) }?:setTransparentImageBitmap()
         setProgress(0)
         doOnFail?.invoke(error.throwable)
     }
@@ -158,6 +159,10 @@ internal class ImageLoaderImpl
         }
     }
 
+    private suspend fun setTransparentImageBitmap() {
+        setImageBitmap(Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.TRANSPARENT) })
+    }
+
     private fun cropToSquare(bitmap: Bitmap): Bitmap? {
         val width = bitmap.width
         val height = bitmap.height
@@ -172,7 +177,6 @@ internal class ImageLoaderImpl
 
     companion object {
         private const val TAG = "ImageDownloader"
-
     }
 
 }
