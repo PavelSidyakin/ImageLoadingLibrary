@@ -21,6 +21,7 @@ internal class FileDownloadCacheRepositoryImpl
     ): FileDownloadCacheRepository {
 
     private var cacheDirectory: String = ""
+    private val cacheDirMutex = Mutex()
 
     override fun init(cacheDirectory: String) {
         this.cacheDirectory = cacheDirectory
@@ -99,7 +100,9 @@ internal class FileDownloadCacheRepositoryImpl
         }
 
         return withContext(dispatcherProvider.io()) {
-            block(File(cacheDirectory))
+            cacheDirMutex.withLock {
+                block(File(cacheDirectory))
+            }
         }
     }
 
@@ -108,7 +111,7 @@ internal class FileDownloadCacheRepositoryImpl
             throw RuntimeException("makePathForUrl() Cache dir is not set. Call init() first.")
         }
 
-        return  File(cacheDirectory).resolve(makeFileNameForUrl(url)).toString()
+        return File(cacheDirectory).resolve(makeFileNameForUrl(url)).toString()
     }
 
     override fun isInited(): Boolean {
