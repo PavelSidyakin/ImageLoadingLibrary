@@ -37,9 +37,16 @@ internal class ImageLoaderImpl
 
     private var imageView: ImageView? = null
 
+    private var currentImageBitmap: Bitmap? = null // To prevent override the same bitmap
+
     override fun into(imageView: ImageView) {
         this.imageView = imageView
         imageView.setImageDrawable(imageView.context?.resources?.getDrawable(R.drawable.image_with_progress_layer_list, null))
+
+        launch(dispatcherProvider.main()) {
+            // Prevent loose of a progress if progressPlaceHolder is not set
+            setImageBitmap(Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.TRANSPARENT) })
+        }
     }
 
     override fun load(url: String) {
@@ -132,10 +139,16 @@ internal class ImageLoaderImpl
             }
 
             layerList.setDrawableByLayerId(R.id.layer_list_item_progress_ring, shapeDrawable)
+            layerList.invalidateSelf()
         }
     }
 
     private suspend fun setImageBitmap(bitmap: Bitmap) {
+        if (currentImageBitmap == bitmap) {
+            return
+        }
+        currentImageBitmap = bitmap
+
         withContext(dispatcherProvider.main()) {
             val layerList = imageView?.drawable as LayerDrawable
 
@@ -145,6 +158,7 @@ internal class ImageLoaderImpl
             val roundedDrawable = RoundedBitmapDrawableFactory.create(resources, croppedBitmap)
             roundedDrawable.setAntiAlias(true)
             roundedDrawable.cornerRadius = max(bitmap.width, bitmap.height) / 2.0f
+
             layerList.setDrawableByLayerId(R.id.layer_list_item_image, roundedDrawable)
             layerList.invalidateSelf()
         }
