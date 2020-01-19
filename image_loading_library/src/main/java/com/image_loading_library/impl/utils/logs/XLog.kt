@@ -2,7 +2,7 @@ package com.image_loading_library.impl.utils.logs
 
 import android.util.Log
 
-object XLog {
+internal object XLog {
     private var enabled = true
 
     fun enableLogging(enable: Boolean) {

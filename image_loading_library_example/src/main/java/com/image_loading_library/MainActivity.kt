@@ -42,10 +42,12 @@ class MainActivity : AppCompatActivity() {
     private fun loadNextImage() {
         currentImageDownloader?.cancel()
 
-        currentImageDownloader = ImageLoader.into(main_activity_image_with_progress).apply {
+        currentImageDownloader = ImageLoader().into(main_activity_image_with_progress).apply {
             progressPlaceHolder = getBitmapFromVectorDrawable(R.drawable.progress_placeholder)
             errorPlaceHolder = getBitmapFromVectorDrawable(R.drawable.error_placeholder)
             progressColor = resources.getColor(android.R.color.holo_green_dark)
+            doOnFail = { currentImageDownloader = null }
+            doOnSuccess = { currentImageDownloader = null }
             load(testImageUrls[currentImageIndex++])
         }
         if (currentImageIndex > testImageUrls.lastIndex) {

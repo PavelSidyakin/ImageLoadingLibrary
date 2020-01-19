@@ -8,6 +8,10 @@ interface ImageDownloader {
 
     fun cancel()
 
+    var doOnSuccess: (() -> Unit)?
+
+    var doOnFail: ((throwable: Throwable) -> Unit)?
+
     var progressPlaceHolder: Bitmap?
 
     var errorPlaceHolder: Bitmap?

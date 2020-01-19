@@ -31,6 +31,9 @@ internal class ImageDownloaderImpl
     override var errorPlaceHolder: Bitmap? = null
     override var progressColor: Int = 0
 
+    override var doOnFail: ((throwable: Throwable) -> Unit)? = null
+    override var doOnSuccess: (() -> Unit)? = null
+
     private var imageView: ImageView? = null
 
     override fun into(imageView: ImageView) {
@@ -85,6 +88,7 @@ internal class ImageDownloaderImpl
 
         errorPlaceHolder?.let { setImageBitmap(it) }
         setProgress(0)
+        doOnFail?.invoke(error.throwable)
     }
 
     private suspend fun handleDownloadSuccess(success: DownloadProgress.Success) {
@@ -92,6 +96,7 @@ internal class ImageDownloaderImpl
 
         setProgress(0)
         setImageBitmap(BitmapFactory.decodeByteArray(success.bytes, 0, success.bytes.size))
+        doOnSuccess?.invoke()
     }
 
     private suspend fun setProgress(progress: Int) {
