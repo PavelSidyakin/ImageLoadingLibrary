@@ -8,10 +8,21 @@
 
     <ImageView android:layout_height="300dp"
         android:layout_width="300dp"
-        android:id="@+id/image_with_progress"
+        android:id="@+id/main_activity_image_with_progress"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:src="@drawable/image_with_progress_layer_list"/>
+
+    <Button
+        android:id="@+id/main_activity_button_next_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_activity_button_next_image"
+        app:layout_constraintTop_toBottomOf="@id/main_activity_image_with_progress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

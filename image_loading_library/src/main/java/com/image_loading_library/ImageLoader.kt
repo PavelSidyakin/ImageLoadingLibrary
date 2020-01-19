@@ -1,6 +1,5 @@
 package com.image_loading_library
 
-import android.content.Context
 import android.widget.ImageView
 import com.image_loading_library.impl.di.DaggerImageLoaderComponent
 import com.image_loading_library.impl.di.ImageLoaderComponent

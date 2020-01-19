@@ -1,10 +1,9 @@
 package com.image_loading_library.impl.presentation
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.GradientDrawable
+import android.graphics.*
 import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.PathShape
 import android.widget.ImageView
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.image_loading_library.R
@@ -12,13 +11,12 @@ import com.image_loading_library.impl.domain.ImageDownloadInteractor
 import com.image_loading_library.impl.model.DownloadProgress
 import com.image_loading_library.impl.utils.DispatcherProvider
 import com.image_loading_library.impl.utils.logs.log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.max
+
 
 internal class ImageDownloaderImpl
     @Inject
@@ -31,6 +29,7 @@ internal class ImageDownloaderImpl
 
     override var progressPlaceHolder: Bitmap? = null
     override var errorPlaceHolder: Bitmap? = null
+    override var progressColor: Int = 0
 
     private var imageView: ImageView? = null
 
@@ -57,6 +56,10 @@ internal class ImageDownloaderImpl
                     }
                 }
         }
+    }
+
+    override fun cancel() {
+        coroutineContext.cancel()
     }
 
     private suspend fun handleDownloadStart(start: DownloadProgress.Start) {
@@ -87,8 +90,8 @@ internal class ImageDownloaderImpl
     private suspend fun handleDownloadSuccess(success: DownloadProgress.Success) {
         log { i(TAG, "ImageDownloaderImpl.handleDownloadSuccess(). success = [${success.bytes.size} bytes]") }
 
-        setImageBitmap(BitmapFactory.decodeByteArray(success.bytes, 0, success.bytes.size))
         setProgress(0)
+        setImageBitmap(BitmapFactory.decodeByteArray(success.bytes, 0, success.bytes.size))
     }
 
     private suspend fun setProgress(progress: Int) {
@@ -96,14 +99,26 @@ internal class ImageDownloaderImpl
 
         withContext(dispatcherProvider.main()) {
             val layerList = imageView?.drawable as LayerDrawable
-            val progressRingGradient = layerList.findDrawableByLayerId(R.id.layer_list_item_progress_ring) as GradientDrawable
 
-            if (progress == 0) {
-                // Hide progress
-                progressRingGradient.setColor(imageView!!.resources.getColor(android.R.color.transparent))
+            val strokeWidth = 20f
+            val arcLeft = strokeWidth / 2
+            val arcTop = strokeWidth / 2
+            val arcRight = imageView!!.width.toFloat() - strokeWidth / 2
+            val arcBottom = imageView!!.height.toFloat() - strokeWidth / 2
+
+            val path = Path().apply {
+                addArc(arcLeft, arcTop, arcRight, arcBottom, -90f, 360 * progress / 100f)
             }
 
-            progressRingGradient.setGradientCenter(0.5f, progress / 100f)
+            val pathShape = PathShape(path, imageView!!.width.toFloat(), imageView!!.height.toFloat())
+            val shapeDrawable = ShapeDrawable(pathShape).apply {
+                setBounds(0, 0, imageView!!.width, imageView!!.height)
+                paint.style = Paint.Style.STROKE
+                paint.strokeWidth = strokeWidth
+                paint.color = progressColor
+            }
+
+            layerList.setDrawableByLayerId(R.id.layer_list_item_progress_ring, shapeDrawable)
         }
     }
 
@@ -111,14 +126,26 @@ internal class ImageDownloaderImpl
         withContext(dispatcherProvider.main()) {
             val layerList = imageView?.drawable as LayerDrawable
 
-            val roundedDrawable = RoundedBitmapDrawableFactory.create(imageView!!.context.resources, bitmap)
+            val croppedBitmap = cropToSquare(bitmap)
+            val roundedDrawable = RoundedBitmapDrawableFactory.create(imageView!!.context.resources, croppedBitmap)
             roundedDrawable.setAntiAlias(true)
-            roundedDrawable.isCircular = true
-
+            roundedDrawable.cornerRadius = max(bitmap.width, bitmap.height) / 2.0f
             layerList.setDrawableByLayerId(R.id.layer_list_item_image, roundedDrawable)
+            layerList.invalidateSelf()
         }
     }
 
+    private fun cropToSquare(bitmap: Bitmap): Bitmap? {
+        val width = bitmap.width
+        val height = bitmap.height
+        val newWidth = if (height > width) width else height
+        val newHeight = if (height > width) height - (height - width) else height
+        var cropW = (width - height) / 2
+        cropW = if (cropW < 0) 0 else cropW
+        var cropH = (height - width) / 2
+        cropH = if (cropH < 0) 0 else cropH
+        return Bitmap.createBitmap(bitmap, cropW, cropH, newWidth, newHeight)
+    }
     companion object {
         private const val TAG = "ImageDownloader"
 

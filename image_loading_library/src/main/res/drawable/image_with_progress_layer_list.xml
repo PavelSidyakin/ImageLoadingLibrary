@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/layer_list_item_image" android:drawable="@android:color/transparent"/>
-    <item android:id="@+id/layer_list_item_progress_ring" >
-        <shape
-            android:shape="ring"
-            android:innerRadiusRatio="2.5"
-            android:thickness="10dp"
-            android:useLevel="false"
-            >
-            <gradient
-                android:centerColor="@android:color/transparent"
-                android:centerY="0"
-                android:endColor="@android:color/holo_green_dark"
-                android:startColor="@android:color/transparent"
-                android:type="sweep"/>
-        </shape>
-    </item>
+    <item android:id="@+id/layer_list_item_progress_ring" android:drawable="@android:color/transparent"/>
 
 </layer-list>
