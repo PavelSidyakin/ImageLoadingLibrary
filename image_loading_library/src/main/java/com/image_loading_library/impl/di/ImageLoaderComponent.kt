@@ -1,6 +1,6 @@
 package com.image_loading_library.impl.di
 
-import com.image_loading_library.impl.presentation.ImageDownloaderInternal
+import com.image_loading_library.ImageLoader
 import com.image_loading_library.impl.domain.FileDownloader
 import dagger.Component
 
@@ -8,8 +8,7 @@ import dagger.Component
 @ImageLoaderScope
 internal interface ImageLoaderComponent {
 
-    fun getImageDownloaderInternal(): ImageDownloaderInternal
-    fun getDownloader(): FileDownloader
+    fun getImageDownloader(): ImageLoader
 
     interface Builder {
         fun build(): ImageLoaderComponent

@@ -26,7 +26,8 @@ class MainActivity : AppCompatActivity() {
     )
 
     private var currentImageIndex = 0
-    private var currentImageDownloader: ImageDownloader? = null
+    private var currentImageLoader: ImageLoader? = null
+    private val imageLoadLibrary: ImageLoadLibrary = ImageLoadLibrary()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,14 +41,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadNextImage() {
-        currentImageDownloader?.cancel()
+        currentImageLoader?.cancel()
 
-        currentImageDownloader = ImageLoader().into(main_activity_image_with_progress).apply {
+        currentImageLoader = imageLoadLibrary.createImageLoader().apply {
+            into(main_activity_image_with_progress)
             progressPlaceHolder = getBitmapFromVectorDrawable(R.drawable.progress_placeholder)
             errorPlaceHolder = getBitmapFromVectorDrawable(R.drawable.error_placeholder)
             progressColor = resources.getColor(android.R.color.holo_green_dark)
-            doOnFail = { currentImageDownloader = null }
-            doOnSuccess = { currentImageDownloader = null }
+            doOnFail = { currentImageLoader = null }
+            doOnSuccess = { currentImageLoader = null }
             load(testImageUrls[currentImageIndex++])
         }
         if (currentImageIndex > testImageUrls.lastIndex) {

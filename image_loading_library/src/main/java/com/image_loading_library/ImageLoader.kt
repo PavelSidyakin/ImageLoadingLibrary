@@ -1,20 +1,24 @@
 package com.image_loading_library
 
+import android.graphics.Bitmap
 import android.widget.ImageView
-import com.image_loading_library.impl.di.DaggerImageLoaderComponent
-import com.image_loading_library.impl.di.ImageLoaderComponent
 
-class ImageLoader {
+interface ImageLoader {
 
-    private var imageLoaderComponent: ImageLoaderComponent? = null
+    fun into(imageView: ImageView)
 
-    fun into(imageView: ImageView): ImageDownloader {
-        if (imageLoaderComponent == null) {
-            imageLoaderComponent = DaggerImageLoaderComponent.builder().build()
-        }
+    fun load(url: String)
 
-        return (imageLoaderComponent?.getImageDownloaderInternal()?.apply { into(imageView) })
-            ?: throw RuntimeException("Component is not initialized")
-    }
+    fun cancel()
+
+    var doOnSuccess: (() -> Unit)?
+
+    var doOnFail: ((throwable: Throwable) -> Unit)?
+
+    var progressPlaceHolder: Bitmap?
+
+    var errorPlaceHolder: Bitmap?
+
+    var progressColor: Int
 
 }

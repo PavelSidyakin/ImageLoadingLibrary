@@ -6,6 +6,7 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.PathShape
 import android.widget.ImageView
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import com.image_loading_library.ImageLoader
 import com.image_loading_library.R
 import com.image_loading_library.impl.domain.ImageDownloadInteractor
 import com.image_loading_library.impl.model.DownloadProgress
@@ -18,12 +19,12 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 
 
-internal class ImageDownloaderImpl
+internal class ImageLoaderImpl
     @Inject
     constructor(
         private val imageDownloadInteractor: ImageDownloadInteractor,
         private val dispatcherProvider: DispatcherProvider
-    ) : ImageDownloaderInternal, CoroutineScope {
+    ) : ImageLoader, CoroutineScope {
 
     override val coroutineContext: CoroutineContext = dispatcherProvider.io() + Job()
 
