@@ -37,6 +37,8 @@ You can optionally set placeholders for image, progress color and success/fail h
 
 Used technologies/libraries: Kotlin, Coroutines, Dagger 2.
 
+Class diagram with class description:
 
+![](ClassDiagram.png) 
   
   
