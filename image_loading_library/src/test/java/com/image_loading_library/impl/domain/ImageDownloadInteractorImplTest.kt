@@ -3,7 +3,6 @@ package com.image_loading_library.impl.domain
 import com.image_loading_library.impl.model.DownloadProgress
 import com.image_loading_library.impl.utils.logs.XLog
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyArray
 import com.nhaarman.mockitokotlin2.inOrder
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
@@ -18,7 +17,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 
 internal class ImageDownloadInteractorImplTest {
@@ -141,7 +139,7 @@ internal class ImageDownloadInteractorImplTest {
 
         @Nested
         inner class `When cache params are incorrect, shouldn't try to put in cache` {
-            val imageBytes = byteArrayOf(1, 2, 3)
+            private val imageBytes = byteArrayOf(1, 2, 3)
 
             @BeforeEach
             fun beforeEachTest() {

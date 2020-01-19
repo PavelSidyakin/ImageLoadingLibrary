@@ -4,5 +4,4 @@ import javax.inject.Scope
 
 @Scope
 @Retention(AnnotationRetention.SOURCE)
-internal annotation class ImageLoaderScope {
-}
+internal annotation class ImageLoaderScope

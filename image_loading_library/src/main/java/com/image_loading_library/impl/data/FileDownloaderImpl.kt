@@ -49,7 +49,7 @@ internal class FileDownloaderImpl
 
                     var offset = 0
                     do {
-                        val currentRead = bytesStream.read(data, offset, min(bufferSize, contentLength.toInt() - offset))
+                        val currentRead = bytesStream.read(data, offset, min(bufferSize, contentLength - offset))
                         offset += currentRead
                         val progress = (offset * 100f / data.size)
                         log { i(TAG, "DownloaderImpl.downloadFile(). progress=$progress%") }
