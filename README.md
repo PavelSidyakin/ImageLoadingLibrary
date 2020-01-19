@@ -33,11 +33,25 @@ You can optionally set placeholders for image, progress color and success/fail h
      imageLoader.doOnSuccess = { /* Do on success */}
   
 
+## How to build and run
+
+Put your local.properties to project root dir. 
+Then execute 
+  
+    gradlew assembleDebug
+    
+or open the project in Android Studio and build. 
+
+Run the sample application module "image_loading_library_example".     
+ 
+
 ## Implementation details
 
 Used technologies/libraries: Kotlin, Coroutines, Dagger 2.
 
-Class diagram with class description:
+Architecture concept: Clean Architecture with splitting to layers (data, domain, UI). See the class diagram for details.  
+
+Class diagram with classed description:
 
 ![](ClassDiagram.png) 
   
