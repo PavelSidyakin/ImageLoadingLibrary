@@ -42,7 +42,7 @@ internal class ImageLoaderImpl
 
     override fun into(imageView: ImageView) {
         this.imageView = imageView
-        imageView.setImageDrawable(imageView.context?.resources?.getDrawable(R.drawable.image_with_progress_layer_list, null))
+        imageView.setImageDrawable(imageView.context?.resources?.getDrawable(R.drawable.image_with_progress_layer_list, null)?.mutate())
 
         launch(dispatcherProvider.main()) {
             // Prevent loose of a progress if progressPlaceHolder is not set
