@@ -1,9 +1,14 @@
 package com.image_loading_library.impl.presentation
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.PathShape
+import android.util.TypedValue
 import android.widget.ImageView
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.image_loading_library.ImageLoader
@@ -12,12 +17,15 @@ import com.image_loading_library.impl.domain.ImageDownloadInteractor
 import com.image_loading_library.impl.model.DownloadProgress
 import com.image_loading_library.impl.utils.DispatcherProvider
 import com.image_loading_library.impl.utils.logs.log
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
-
 
 internal class ImageLoaderImpl
 
@@ -108,18 +116,30 @@ internal class ImageLoaderImpl
         withContext(dispatcherProvider.main()) {
             val layerList = imageView?.drawable as LayerDrawable
 
-            val imageWidth = imageView?.run { width } ?: 0
-            val imageHeight = imageView?.run { height } ?: 0
+            var imageWidth = imageView?.run { width } ?: 0
+            var imageHeight = imageView?.run { height } ?: 0
 
             if (imageHeight == 0 || imageWidth == 0) {
                 return@withContext
             }
 
-            val strokeWidth = 20f
-            val arcLeft = strokeWidth / 2
-            val arcTop = strokeWidth / 2
-            val arcRight = imageWidth.toFloat() - strokeWidth / 2
-            val arcBottom = imageHeight.toFloat() - strokeWidth / 2
+            // Crop to square
+            if (imageHeight < imageWidth) imageWidth = imageHeight
+            if (imageWidth < imageHeight) imageHeight = imageWidth
+
+            val dpSize = DEFAULT_CIRCLE_STROKE_WIDTH_DP
+            val dm = imageView?.context?.resources?.displayMetrics
+            var strokeWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpSize.toFloat(), dm).toInt()
+
+            if (strokeWidth <= 0) strokeWidth = 2
+
+            // Make it even to draw arc on the image border
+            if (strokeWidth  % 2 != 0) strokeWidth += 1
+
+            val arcLeft = calcArcTopOrLeft(strokeWidth)
+            val arcTop = calcArcTopOrLeft(strokeWidth)
+            val arcRight = calcArcRightOrBottom(imageWidth, strokeWidth)
+            val arcBottom = calcArcRightOrBottom(imageHeight, strokeWidth)
 
             val path = Path().apply {
                 addArc(arcLeft, arcTop, arcRight, arcBottom, -90f, 360 * progress / 100f)
@@ -129,13 +149,21 @@ internal class ImageLoaderImpl
             val shapeDrawable = ShapeDrawable(pathShape).apply {
                 setBounds(0, 0, imageWidth, imageHeight)
                 paint.style = Paint.Style.STROKE
-                paint.strokeWidth = strokeWidth
+                paint.strokeWidth = strokeWidth.toFloat()
                 paint.color = progressColor
             }
 
             layerList.setDrawableByLayerId(R.id.layer_list_item_progress_ring, shapeDrawable)
             layerList.invalidateSelf()
         }
+    }
+
+    private fun calcArcTopOrLeft(strokeWidth: Int): Float {
+        return (strokeWidth / 2).toFloat()
+    }
+
+    private fun calcArcRightOrBottom(imageSideSize: Int, strokeWidth: Int): Float {
+        return (imageSideSize - strokeWidth / 2).toFloat()
     }
 
     private suspend fun setImageBitmap(bitmap: Bitmap) {
@@ -177,6 +205,7 @@ internal class ImageLoaderImpl
 
     companion object {
         private const val TAG = "ImageDownloader"
+        private const val DEFAULT_CIRCLE_STROKE_WIDTH_DP = 10
     }
 
 }
