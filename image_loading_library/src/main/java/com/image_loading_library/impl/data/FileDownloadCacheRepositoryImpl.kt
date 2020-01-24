@@ -31,7 +31,9 @@ internal class FileDownloadCacheRepositoryImpl
     override suspend fun putInCache(url: String, fileBytes: ByteArray) {
         log { i(TAG, "FileDownloadCacheRepositoryImpl.putInCache(). url = [${url}], imageBytesSize = [${fileBytes.size}]") }
         withContext(dispatcherProvider.io()) {
-            File(makePathForUrl(url)).writeBytes(fileBytes)
+            cacheDirMutex.withLock {
+                File(makePathForUrl(url)).writeBytes(fileBytes)
+            }
         }
     }
 
